@@ -8,6 +8,23 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, type LoginFormData } from '@/lib/utils/validation'
 import { useAuth } from '@/lib/hooks/useAuth'
 
+function getUserRole(user: {
+  user_metadata?: Record<string, unknown> | null
+  app_metadata?: Record<string, unknown> | null
+}) {
+  const roleFromUserMeta = user.user_metadata?.role
+  if (typeof roleFromUserMeta === 'string') {
+    return roleFromUserMeta
+  }
+
+  const roleFromAppMeta = user.app_metadata?.role
+  if (typeof roleFromAppMeta === 'string') {
+    return roleFromAppMeta
+  }
+
+  return undefined
+}
+
 function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -22,7 +39,8 @@ function LoginContent() {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      router.push('/')
+      const role = getUserRole(user)
+      router.push(role === 'admin' ? '/admin' : '/')
     }
   }, [user, router])
 
@@ -46,8 +64,8 @@ function LoginContent() {
         return
       }
 
-      // Redirect to home
-      router.push('/')
+      const role = getUserRole(result.data?.user ?? {})
+      router.push(role === 'admin' ? '/admin' : '/')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Bir hata oluştu')
     } finally {

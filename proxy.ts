@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const protectedRoutes = ['/admin', '/profile', '/orders', '/checkout', '/cart']
+const protectedRoutes = ['/profile', '/orders', '/checkout']
 
 function getUserRole(user: {
   user_metadata?: Record<string, unknown> | null
@@ -63,7 +63,15 @@ export async function proxy(request: NextRequest) {
   }
 
   if (isAuthRoute && session) {
-    return NextResponse.redirect(new URL('/', request.url))
+    const role = getUserRole(session.user)
+    return NextResponse.redirect(new URL(role === 'admin' ? '/admin' : '/', request.url))
+  }
+
+  if (pathname === '/' && session) {
+    const role = getUserRole(session.user)
+    if (role === 'admin') {
+      return NextResponse.redirect(new URL('/admin', request.url))
+    }
   }
 
   if (pathname.startsWith('/admin') && session) {

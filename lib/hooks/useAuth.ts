@@ -57,9 +57,12 @@ export function useAuth() {
       }
 
       // TODO: Implement admin role checking from user metadata or database
-      // For now, checking user.user_metadata for admin role
+      // For now, checking both user and app metadata for admin role
       try {
-        const isAdminUser = user.user_metadata?.role === 'admin'
+        const roleFromUserMetadata = user.user_metadata?.role
+        const roleFromAppMetadata = user.app_metadata?.role
+        const isAdminUser =
+          roleFromUserMetadata === 'admin' || roleFromAppMetadata === 'admin'
         setIsAdmin(isAdminUser || false)
       } catch (error) {
         console.error('Error checking admin status:', error)
