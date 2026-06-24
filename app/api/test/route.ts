@@ -2,6 +2,13 @@
 
 import { supabase } from '@/lib/supabase'
 
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return 'Unknown error'
+}
+
 export async function testDatabaseConnection() {
   try {
     // Kategorileri test et
@@ -29,11 +36,11 @@ export async function testDatabaseConnection() {
       categories: categories?.length || 0,
       products: products?.length || 0,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Database test error:', error)
     return {
       success: false,
-      error: error.message,
+      error: getErrorMessage(error),
     }
   }
 }

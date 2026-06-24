@@ -13,15 +13,11 @@ export default function LoginPage() {
   const searchParams = useSearchParams()
   const { signIn, user } = useAuth()
   const [error, setError] = useState<string>('')
-  const [success, setSuccess] = useState<string>('')
   const [loading, setLoading] = useState(false)
-
-  // Check if registered
-  useEffect(() => {
-    if (searchParams.get('registered') === 'true') {
-      setSuccess('Kayıt başarılı! Lütfen giriş yapınız.')
-    }
-  }, [searchParams])
+  const success =
+    searchParams.get('registered') === 'true'
+      ? 'Kayıt başarılı! Lütfen giriş yapınız.'
+      : ''
 
   // Redirect if already logged in
   useEffect(() => {
@@ -40,7 +36,6 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     setError('')
-    setSuccess('')
     setLoading(true)
 
     try {
@@ -53,8 +48,8 @@ export default function LoginPage() {
 
       // Redirect to home
       router.push('/')
-    } catch (err: any) {
-      setError(err.message || 'Bir hata oluştu')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Bir hata oluştu')
     } finally {
       setLoading(false)
     }

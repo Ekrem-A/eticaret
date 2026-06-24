@@ -1,5 +1,12 @@
 import { supabase } from '@/lib/supabase'
 
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return 'Unknown error'
+}
+
 export async function GET() {
   try {
     // Test: Kategorileri getir
@@ -31,7 +38,7 @@ export async function GET() {
         data: products?.slice(0, 3),
       },
     })
-  } catch (error: any) {
-    return Response.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    return Response.json({ error: getErrorMessage(error) }, { status: 500 })
   }
 }

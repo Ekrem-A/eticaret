@@ -1,5 +1,12 @@
 import { getSupabaseAdmin } from '@/lib/supabase'
 
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return 'Unknown error'
+}
+
 export async function GET(request: Request) {
   try {
     const supabase = getSupabaseAdmin()
@@ -54,10 +61,10 @@ export async function GET(request: Request) {
       data: data || [],
       total: count || 0,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Products API error:', error)
     return Response.json(
-      { success: false, error: error.message },
+      { success: false, error: getErrorMessage(error) },
       { status: 500 }
     )
   }

@@ -1,6 +1,13 @@
 import { supabase } from './supabase'
 import { User } from '@/types/database'
 
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return 'Unknown error'
+}
+
 // Sign up
 export const signUp = async (email: string, password: string, fullName: string) => {
   try {
@@ -17,8 +24,8 @@ export const signUp = async (email: string, password: string, fullName: string) 
     if (error) throw error
 
     return { success: true, data }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -33,8 +40,8 @@ export const signIn = async (email: string, password: string) => {
     if (error) throw error
 
     return { success: true, data }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -46,8 +53,8 @@ export const signOut = async () => {
     if (error) throw error
 
     return { success: true }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -59,8 +66,8 @@ export const getSession = async () => {
     if (error) throw error
 
     return { success: true, data: data.session }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -72,8 +79,8 @@ export const getCurrentUser = async () => {
     if (error) throw error
 
     return { success: true, data: data.user }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -87,8 +94,8 @@ export const resetPassword = async (email: string) => {
     if (error) throw error
 
     return { success: true, data }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -102,8 +109,8 @@ export const updatePassword = async (newPassword: string) => {
     if (error) throw error
 
     return { success: true, data }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -120,8 +127,8 @@ export const updateUserProfile = async (
     if (error) throw error
 
     return { success: true, data }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -135,7 +142,7 @@ export const checkEmailExists = async (email: string) => {
     if (error && error.code !== 'PGRST116') throw error
 
     return { success: true, exists: data }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error: unknown) {
+    return { success: false, error: getErrorMessage(error) }
   }
 }

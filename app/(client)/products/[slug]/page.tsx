@@ -8,6 +8,13 @@ import { Product } from '@/types/database'
 import { supabase } from '@/lib/supabase'
 import { useCartStore } from '@/lib/stores/cartStore'
 
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return 'Ürün yüklenemedi'
+}
+
 export default function ProductDetailPage() {
   const params = useParams()
   const slug = params.slug as string
@@ -26,13 +33,14 @@ export default function ProductDetailPage() {
           .from('products')
           .select('*')
           .eq('slug', slug)
+          .eq('is_active', true)
           .single()
 
         if (error) throw error
         setProduct(data)
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Error fetching product:', err)
-        setError(err.message)
+        setError(getErrorMessage(err))
       } finally {
         setLoading(false)
       }

@@ -4,6 +4,13 @@ import { useEffect, useState, useCallback } from 'react'
 import { Session, User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return 'Unknown error'
+}
+
 // Custom hook for auth
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
@@ -78,8 +85,8 @@ export function useAuth() {
 
         if (error) throw error
         return { success: true, data }
-      } catch (error: any) {
-        return { success: false, error: error.message }
+      } catch (error: unknown) {
+        return { success: false, error: getErrorMessage(error) }
       }
     },
     []
@@ -95,8 +102,8 @@ export function useAuth() {
 
         if (error) throw error
         return { success: true, data }
-      } catch (error: any) {
-        return { success: false, error: error.message }
+      } catch (error: unknown) {
+        return { success: false, error: getErrorMessage(error) }
       }
     },
     []
@@ -106,8 +113,8 @@ export function useAuth() {
     try {
       const { error } = await supabase.auth.signOut()
       if (error) throw error
-    } catch (error: any) {
-      throw new Error(error.message)
+    } catch (error: unknown) {
+      throw new Error(getErrorMessage(error))
     }
   }, [])
 
@@ -123,8 +130,8 @@ export function useAuth() {
 
         if (error) throw error
         return { success: true, data }
-      } catch (error: any) {
-        return { success: false, error: error.message }
+      } catch (error: unknown) {
+        return { success: false, error: getErrorMessage(error) }
       }
     },
     []
@@ -139,8 +146,8 @@ export function useAuth() {
 
         if (error) throw error
         return { success: true, data }
-      } catch (error: any) {
-        return { success: false, error: error.message }
+      } catch (error: unknown) {
+        return { success: false, error: getErrorMessage(error) }
       }
     },
     []

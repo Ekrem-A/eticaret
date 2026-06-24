@@ -36,8 +36,8 @@ export default function RegisterPage() {
 
       // Show success message and redirect
       router.push('/login?registered=true')
-    } catch (err: any) {
-      setError(err.message || 'Bir hata oluştu')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Bir hata oluştu')
     } finally {
       setLoading(false)
     }

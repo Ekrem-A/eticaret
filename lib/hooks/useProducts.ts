@@ -25,10 +25,8 @@ export function useProducts(options: UseProductsOptions = {}) {
       setError(null)
 
       try {
-        console.log('🔍 Fetching categories...')
         // Fetch categories
         const catRes = await axios.get('/api/categories')
-        console.log('📊 Categories:', catRes.data)
         setCategories(catRes.data.data || [])
 
         // Fetch products with filters
@@ -40,14 +38,16 @@ export function useProducts(options: UseProductsOptions = {}) {
           perPage: String(options.perPage || 12),
         })
 
-        console.log('🔍 Fetching products with params:', params.toString())
         const prodRes = await axios.get(`/api/products?${params}`)
-        console.log('📊 Products:', prodRes.data)
         setProducts(prodRes.data.data || [])
         setTotal(prodRes.data.total || 0)
-      } catch (err: any) {
-        console.error('❌ Error fetching data:', err)
-        setError(err.message || 'Failed to fetch data')
+      } catch (err: unknown) {
+        console.error('Failed to fetch data:', err)
+        if (axios.isAxiosError(err)) {
+          setError(err.message || 'Failed to fetch data')
+        } else {
+          setError('Failed to fetch data')
+        }
       } finally {
         setLoading(false)
       }

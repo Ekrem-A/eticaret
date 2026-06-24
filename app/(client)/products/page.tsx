@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useProducts } from '@/lib/hooks/useProducts'
 import { ProductCard } from '@/components/client/ProductCard'
@@ -22,6 +23,13 @@ export default function ProductsPage() {
   })
 
   const totalPages = Math.ceil(total / 12)
+
+  const handleSortChange = (value: string) => {
+    if (value === 'price-asc' || value === 'price-desc' || value === 'newest') {
+      setSort(value)
+      setPage(1)
+    }
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 py-8">
@@ -59,7 +67,7 @@ export default function ProductsPage() {
                   Kategoriler
                 </h3>
                 <div className="space-y-2">
-                  <a
+                  <Link
                     href="/products"
                     className={`block px-3 py-2 rounded text-sm ${
                       !categoryId
@@ -68,9 +76,9 @@ export default function ProductsPage() {
                     }`}
                   >
                     Tüm Ürünler
-                  </a>
+                  </Link>
                   {categories.map((category) => (
-                    <a
+                    <Link
                       key={category.id}
                       href={`/products?category=${category.id}`}
                       className={`block px-3 py-2 rounded text-sm ${
@@ -80,7 +88,7 @@ export default function ProductsPage() {
                       }`}
                     >
                       {category.name}
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -93,8 +101,7 @@ export default function ProductsPage() {
                 <select
                   value={sort}
                   onChange={(e) => {
-                    setSort(e.target.value as any)
-                    setPage(1)
+                    handleSortChange(e.target.value)
                   }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
                 >
