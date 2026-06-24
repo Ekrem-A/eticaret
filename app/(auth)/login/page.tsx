@@ -32,9 +32,11 @@ function LoginContent() {
   const [error, setError] = useState<string>('')
   const [loading, setLoading] = useState(false)
   const success =
-    searchParams.get('registered') === 'true'
-      ? 'Kayıt başarılı! Lütfen giriş yapınız.'
-      : ''
+    searchParams.get('confirmed') === 'true'
+      ? 'Email doğrulandı! Şimdi giriş yapabilirsiniz.'
+      : searchParams.get('registered') === 'true'
+        ? 'Kayıt başarılı! Lütfen giriş yapınız.'
+        : ''
 
   // Redirect if already logged in
   useEffect(() => {

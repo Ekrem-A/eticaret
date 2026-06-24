@@ -11,6 +11,9 @@ function getErrorMessage(error: unknown): string {
 // Sign up
 export const signUp = async (email: string, password: string, fullName: string) => {
   try {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+    const normalizedBaseUrl = baseUrl.replace(/\/$/, '')
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -18,6 +21,7 @@ export const signUp = async (email: string, password: string, fullName: string) 
         data: {
           full_name: fullName,
         },
+        emailRedirectTo: `${normalizedBaseUrl}/login?confirmed=true`,
       },
     })
 

@@ -76,6 +76,11 @@ export function useAuth() {
   const signUp = useCallback(
     async (email: string, password: string, fullName: string) => {
       try {
+        const baseUrl =
+          process.env.NEXT_PUBLIC_API_URL ||
+          (typeof window !== 'undefined' ? window.location.origin : '')
+        const normalizedBaseUrl = baseUrl.replace(/\/$/, '')
+
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -83,6 +88,7 @@ export function useAuth() {
             data: {
               full_name: fullName,
             },
+            emailRedirectTo: `${normalizedBaseUrl}/login?confirmed=true`,
           },
         })
 
