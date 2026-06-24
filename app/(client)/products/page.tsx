@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useProducts } from '@/lib/hooks/useProducts'
 import { ProductCard } from '@/components/client/ProductCard'
 
-export default function ProductsPage() {
+function ProductsContent() {
   const searchParams = useSearchParams()
   const [sort, setSort] = useState<'price-asc' | 'price-desc' | 'newest'>('newest')
   const [search, setSearch] = useState('')
@@ -169,5 +169,25 @@ export default function ProductsPage() {
         </div>
       </div>
     </main>
+  )
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-gray-50 py-8">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {Array.from({ length: 9 }).map((_, index) => (
+                <div key={index} className="bg-gray-200 rounded-lg h-64 animate-pulse" />
+              ))}
+            </div>
+          </div>
+        </main>
+      }
+    >
+      <ProductsContent />
+    </Suspense>
   )
 }

@@ -4,10 +4,20 @@ import { NextResponse, type NextRequest } from 'next/server'
 const protectedRoutes = ['/admin', '/profile', '/orders', '/checkout', '/cart']
 
 function getUserRole(user: {
-  user_metadata?: { role?: string }
-  app_metadata?: { role?: string }
+  user_metadata?: Record<string, unknown> | null
+  app_metadata?: Record<string, unknown> | null
 }) {
-  return user.user_metadata?.role ?? user.app_metadata?.role
+  const userRole = user.user_metadata?.role
+  if (typeof userRole === 'string') {
+    return userRole
+  }
+
+  const appRole = user.app_metadata?.role
+  if (typeof appRole === 'string') {
+    return appRole
+  }
+
+  return undefined
 }
 
 export async function proxy(request: NextRequest) {
