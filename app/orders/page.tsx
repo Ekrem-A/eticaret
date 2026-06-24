@@ -82,34 +82,71 @@ export default function OrdersPage() {
             <p className="mt-2 text-slate-600">Urun ekleyip ilk siparisinizi kolayca olusturabilirsiniz.</p>
           </section>
         ) : (
-          <section className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50 text-slate-600">
-                <tr>
-                  <th className="px-4 py-3 text-left">Siparis No</th>
-                  <th className="px-4 py-3 text-left">Durum</th>
-                  <th className="px-4 py-3 text-left">Odeme</th>
-                  <th className="px-4 py-3 text-left">Toplam</th>
-                  <th className="px-4 py-3 text-left">Tarih</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr key={order.id} className="border-t border-slate-100">
-                    <td className="px-4 py-3 font-medium text-slate-900">{order.order_number}</td>
-                    <td className="px-4 py-3">
-                      <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-slate-700">{order.payment_status}</td>
-                    <td className="px-4 py-3 font-semibold text-slate-900">{formatCurrency(order.total_amount)}</td>
-                    <td className="px-4 py-3 text-slate-600">{formatDate(order.created_at)}</td>
+          <>
+            <section className="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white md:block">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Siparis No</th>
+                    <th className="px-4 py-3 text-left">Durum</th>
+                    <th className="px-4 py-3 text-left">Odeme</th>
+                    <th className="px-4 py-3 text-left">Toplam</th>
+                    <th className="px-4 py-3 text-left">Tarih</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
+                </thead>
+                <tbody>
+                  {orders.map((order) => (
+                    <tr key={order.id} className="border-t border-slate-100">
+                      <td className="px-4 py-3 font-medium text-slate-900">{order.order_number}</td>
+                      <td className="px-4 py-3">
+                        <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                          {order.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-slate-700">{order.payment_status}</td>
+                      <td className="px-4 py-3 font-semibold text-slate-900">{formatCurrency(order.total_amount)}</td>
+                      <td className="px-4 py-3 text-slate-600">{formatDate(order.created_at)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
+
+            <div className="space-y-4 md:hidden">
+              {orders.map((order) => (
+                <article key={order.id} className="rounded-2xl border border-slate-200 bg-white p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-600">
+                        Siparis No
+                      </p>
+                      <p className="mt-1 font-semibold text-slate-900">{order.order_number}</p>
+                    </div>
+                    <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                      {order.status}
+                    </span>
+                  </div>
+
+                  <dl className="mt-4 space-y-3 text-sm text-slate-700">
+                    <div className="flex items-center justify-between gap-3">
+                      <dt>Odeme</dt>
+                      <dd className="text-right font-medium text-slate-900">{order.payment_status}</dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <dt>Toplam</dt>
+                      <dd className="text-right font-semibold text-slate-900">
+                        {formatCurrency(order.total_amount)}
+                      </dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <dt>Tarih</dt>
+                      <dd className="text-right text-slate-600">{formatDate(order.created_at)}</dd>
+                    </div>
+                  </dl>
+                </article>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </main>

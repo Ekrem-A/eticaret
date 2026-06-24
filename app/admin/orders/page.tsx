@@ -116,13 +116,13 @@ export default function AdminOrdersPage() {
 
   return (
     <section className="bg-white rounded-lg border border-slate-200 p-5">
-      <div className="mb-4 flex items-center justify-between gap-3">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-lg font-semibold text-slate-900">Siparis Yonetimi</h2>
         <input
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Siparis no veya durum ara..."
-          className="px-3 py-2 rounded-md border border-slate-300 w-full max-w-sm"
+          className="w-full rounded-md border border-slate-300 px-3 py-2 sm:max-w-sm"
         />
       </div>
 
@@ -138,9 +138,66 @@ export default function AdminOrdersPage() {
             <div key={index} className="h-12 rounded bg-slate-200 animate-pulse" />
           ))}
         </div>
+      ) : orders.length === 0 ? (
+        <p className="py-8 text-center text-sm text-slate-500">Siparis bulunamadi.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+        <>
+          <div className="space-y-4 md:hidden">
+            {orders.map((order) => (
+              <article key={order.id} className="rounded-xl border border-slate-200 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-medium text-slate-900">{order.order_number}</p>
+                    <p className="mt-1 break-all text-xs text-slate-500">{order.user_id}</p>
+                  </div>
+                  <p className="text-sm font-semibold text-slate-900">
+                    {formatCurrency(order.total_amount)}
+                  </p>
+                </div>
+
+                <p className="mt-3 text-sm text-slate-600">{formatDate(order.created_at)}</p>
+
+                <div className="mt-4 grid gap-3">
+                  <select
+                    value={order.status}
+                    disabled={updatingOrderId === order.id}
+                    onChange={(event) =>
+                      void updateOrder(order.id, {
+                        status: event.target.value as OrderStatus,
+                      })
+                    }
+                    className="rounded border border-slate-300 px-2 py-2"
+                  >
+                    {orderStatuses.map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+
+                  <select
+                    value={order.payment_status}
+                    disabled={updatingOrderId === order.id}
+                    onChange={(event) =>
+                      void updateOrder(order.id, {
+                        payment_status: event.target.value as PaymentStatus,
+                      })
+                    }
+                    className="rounded border border-slate-300 px-2 py-2"
+                  >
+                    {paymentStatuses.map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="hidden overflow-x-auto md:block">
+            <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200 text-left text-slate-600">
                 <th className="py-2 pr-3">Siparis No</th>
@@ -198,12 +255,9 @@ export default function AdminOrdersPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
-
-          {orders.length === 0 && (
-            <p className="text-sm text-slate-500 py-8 text-center">Siparis bulunamadi.</p>
-          )}
-        </div>
+            </table>
+          </div>
+        </>
       )}
     </section>
   )

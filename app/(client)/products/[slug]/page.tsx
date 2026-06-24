@@ -89,10 +89,10 @@ export default function ProductDetailPage() {
   const imageUrl = product.image_url || '/images/placeholder.jpg'
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8">
+    <main className="min-h-screen bg-gray-50 py-6 sm:py-8">
       <div className="container mx-auto px-4">
         {/* Breadcrumb */}
-        <div className="mb-6 text-sm text-gray-600">
+        <div className="mb-6 overflow-x-auto whitespace-nowrap text-sm text-gray-600">
           <Link href="/products" className="text-blue-600 hover:underline">
             Ürünler
           </Link>
@@ -100,10 +100,10 @@ export default function ProductDetailPage() {
           <span>{product.name}</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-lg shadow-md p-8">
+        <div className="grid grid-cols-1 gap-6 rounded-lg bg-white p-4 shadow-md sm:p-6 md:grid-cols-2 md:gap-8 md:p-8">
           {/* Image */}
           <div>
-            <div className="relative h-96 w-full bg-gray-100 rounded-lg overflow-hidden">
+            <div className="relative h-72 w-full overflow-hidden rounded-lg bg-gray-100 sm:h-80 md:h-96">
               <Image
                 src={imageUrl}
                 alt={product.name}
@@ -115,7 +115,7 @@ export default function ProductDetailPage() {
 
             {/* Additional Images */}
             {product.images && product.images.length > 0 && (
-              <div className="grid grid-cols-4 gap-2 mt-4">
+              <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4">
                 {product.images.map((img, idx) => (
                   <div key={idx} className="relative h-20 bg-gray-100 rounded">
                     <Image src={img} alt={`${product.name} ${idx}`} fill className="object-cover" />
@@ -135,16 +135,16 @@ export default function ProductDetailPage() {
             )}
 
             {/* Title */}
-            <h1 className="text-3xl font-bold text-gray-900 mb-3">{product.name}</h1>
+            <h1 className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl">{product.name}</h1>
 
             {/* Rating */}
             {product.rating > 0 && (
-              <div className="flex items-center mb-4">
-                <div className="flex text-yellow-400 text-lg">
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                <div className="flex text-lg text-yellow-400">
                   {'★'.repeat(Math.round(product.rating))}
                   {'☆'.repeat(5 - Math.round(product.rating))}
                 </div>
-                <span className="text-gray-600 ml-3">
+                <span className="text-gray-600">
                   {product.rating.toFixed(1)} ({product.reviews_count} yorum)
                 </span>
               </div>
@@ -191,9 +191,9 @@ export default function ProductDetailPage() {
             {/* Quantity & Add to Cart */}
             {product.stock > 0 && (
               <div className="mb-6">
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                   {/* Quantity */}
-                  <div className="flex items-center border border-gray-300 rounded-lg">
+                  <div className="flex items-center self-start rounded-lg border border-gray-300">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
                       className="px-3 py-2 text-gray-600 hover:bg-gray-100"
@@ -221,7 +221,7 @@ export default function ProductDetailPage() {
                   {/* Add to Cart */}
                   <button
                     onClick={handleAddToCart}
-                    className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+                    className="w-full flex-1 rounded-lg bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700"
                   >
                     Sepete Ekle
                   </button>

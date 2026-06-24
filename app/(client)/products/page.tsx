@@ -32,7 +32,7 @@ function ProductsContent() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8">
+    <main className="min-h-screen bg-gray-50 py-6 sm:py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="mb-8">
@@ -40,10 +40,10 @@ function ProductsContent() {
           <p className="text-gray-600">{total} ürün bulundu</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-4 md:gap-8">
           {/* Sidebar - Filters */}
           <div className="md:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
+            <div className="rounded-lg bg-white p-4 shadow-md sm:p-6 md:sticky md:top-4">
               {/* Search */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-900 mb-2">
@@ -66,10 +66,10 @@ function ProductsContent() {
                 <h3 className="text-sm font-semibold text-gray-900 mb-3">
                   Kategoriler
                 </h3>
-                <div className="space-y-2">
+                <div className="flex gap-2 overflow-x-auto pb-1 md:block md:space-y-2">
                   <Link
                     href="/products"
-                    className={`block px-3 py-2 rounded text-sm ${
+                    className={`shrink-0 rounded px-3 py-2 text-sm md:block ${
                       !categoryId
                         ? 'bg-blue-100 text-blue-700 font-medium'
                         : 'text-gray-700 hover:bg-gray-100'
@@ -81,7 +81,7 @@ function ProductsContent() {
                     <Link
                       key={category.id}
                       href={`/products?category=${category.id}`}
-                      className={`block px-3 py-2 rounded text-sm ${
+                      className={`shrink-0 rounded px-3 py-2 text-sm md:block ${
                         categoryId === category.id
                           ? 'bg-blue-100 text-blue-700 font-medium'
                           : 'text-gray-700 hover:bg-gray-100'
@@ -122,7 +122,7 @@ function ProductsContent() {
             )}
 
             {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
                 {Array.from({ length: 12 }).map((_, i) => (
                   <div
                     key={i}
@@ -137,7 +137,7 @@ function ProductsContent() {
             ) : (
               <>
                 {/* Products */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
                   {products.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}
@@ -145,13 +145,13 @@ function ProductsContent() {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="flex justify-center gap-2">
+                  <div className="flex flex-wrap justify-center gap-2">
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                       (pageNum) => (
                         <button
                           key={pageNum}
                           onClick={() => setPage(pageNum)}
-                          className={`px-3 py-2 rounded ${
+                          className={`min-w-10 rounded px-3 py-2 ${
                             page === pageNum
                               ? 'bg-blue-600 text-white'
                               : 'bg-white border border-gray-300 text-gray-700 hover:border-blue-600'
@@ -176,9 +176,9 @@ export default function ProductsPage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen bg-gray-50 py-8">
+        <main className="min-h-screen bg-gray-50 py-6 sm:py-8">
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-6">
               {Array.from({ length: 9 }).map((_, index) => (
                 <div key={index} className="bg-gray-200 rounded-lg h-64 animate-pulse" />
               ))}
