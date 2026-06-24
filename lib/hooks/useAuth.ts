@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { Session, User } from '@supabase/supabase-js'
+import { AuthChangeEvent, Session, User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
+import { isAdminUser } from '@/lib/utils/admin'
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
@@ -16,7 +17,9 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
-  const [isAdmin, setIsAdmin] = useState(false)
+  const isAdmin = user
+    ? isAdminUser(user, process.env.NEXT_PUBLIC_ADMIN_EMAILS)
+    : false
 
   // Get initial session
   useEffect(() => {
@@ -39,39 +42,16 @@ export function useAuth() {
     // Subscribe to auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-      setUser(session?.user || null)
-      setLoading(false)
-    })
+    } = supabase.auth.onAuthStateChange(
+      (_event: AuthChangeEvent, session: Session | null) => {
+        setSession(session)
+        setUser(session?.user || null)
+        setLoading(false)
+      }
+    )
 
     return () => subscription?.unsubscribe()
   }, [])
-
-  // Check if user is admin
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (!user) {
-        setIsAdmin(false)
-        return
-      }
-
-      // TODO: Implement admin role checking from user metadata or database
-      // For now, checking both user and app metadata for admin role
-      try {
-        const roleFromUserMetadata = user.user_metadata?.role
-        const roleFromAppMetadata = user.app_metadata?.role
-        const isAdminUser =
-          roleFromUserMetadata === 'admin' || roleFromAppMetadata === 'admin'
-        setIsAdmin(isAdminUser || false)
-      } catch (error) {
-        console.error('Error checking admin status:', error)
-        setIsAdmin(false)
-      }
-    }
-
-    checkAdminStatus()
-  }, [user])
 
   const signUp = useCallback(
     async (email: string, password: string, fullName: string) => {
@@ -110,6 +90,10 @@ export function useAuth() {
         })
 
         if (error) throw error
+
+        setSession(data.session ?? null)
+        setUser(data.user ?? null)
+
         return { success: true, data }
       } catch (error: unknown) {
         return { success: false, error: getErrorMessage(error) }

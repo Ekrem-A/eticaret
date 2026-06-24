@@ -1,4 +1,5 @@
 import { getSupabaseAdmin } from '@/lib/supabase'
+import { isAdminUser } from '@/lib/utils/admin'
 
 export interface AdminAuthResult {
   ok: boolean
@@ -10,6 +11,7 @@ export interface AdminAuthResult {
 
 export async function validateAdminRequest(request: Request): Promise<AdminAuthResult> {
   const supabase = getSupabaseAdmin()
+  const adminEmailsRaw = process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS
   const authHeader = request.headers.get('authorization')
 
   if (!authHeader?.startsWith('Bearer ')) {
@@ -42,11 +44,7 @@ export async function validateAdminRequest(request: Request): Promise<AdminAuthR
     }
   }
 
-  const roleFromMetadata =
-    (data.user.user_metadata?.role as string | undefined) ||
-    (data.user.app_metadata?.role as string | undefined)
-
-  if (roleFromMetadata !== 'admin') {
+  if (!isAdminUser(data.user, adminEmailsRaw)) {
     return {
       ok: false,
       status: 403,

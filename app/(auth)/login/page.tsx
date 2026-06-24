@@ -7,23 +7,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, type LoginFormData } from '@/lib/utils/validation'
 import { useAuth } from '@/lib/hooks/useAuth'
-
-function getUserRole(user: {
-  user_metadata?: Record<string, unknown> | null
-  app_metadata?: Record<string, unknown> | null
-}) {
-  const roleFromUserMeta = user.user_metadata?.role
-  if (typeof roleFromUserMeta === 'string') {
-    return roleFromUserMeta
-  }
-
-  const roleFromAppMeta = user.app_metadata?.role
-  if (typeof roleFromAppMeta === 'string') {
-    return roleFromAppMeta
-  }
-
-  return undefined
-}
+import { isAdminUser } from '@/lib/utils/admin'
 
 function LoginContent() {
   const router = useRouter()
@@ -38,13 +22,24 @@ function LoginContent() {
         ? 'Kayıt başarılı! Lütfen giriş yapınız.'
         : ''
 
+  const navigateAfterLogin = (targetPath: string) => {
+    router.replace(targetPath)
+    router.refresh()
+
+    setTimeout(() => {
+      if (window.location.pathname === '/login') {
+        window.location.assign(targetPath)
+      }
+    }, 250)
+  }
+
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      const role = getUserRole(user)
-      router.push(role === 'admin' ? '/admin' : '/')
+      const isAdmin = isAdminUser(user, process.env.NEXT_PUBLIC_ADMIN_EMAILS)
+      navigateAfterLogin(isAdmin ? '/admin' : '/')
     }
-  }, [user, router])
+  }, [user])
 
   const {
     register,
@@ -65,9 +60,6 @@ function LoginContent() {
         setError(result.error || 'Giriş başarısız oldu')
         return
       }
-
-      const role = getUserRole(result.data?.user ?? {})
-      router.push(role === 'admin' ? '/admin' : '/')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Bir hata oluştu')
     } finally {

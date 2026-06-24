@@ -1,27 +1,10 @@
 import { createServerClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse, type NextRequest } from 'next/server'
-
-const protectedRoutes = ['/profile', '/orders', '/checkout']
-
-function getUserRole(user: {
-  user_metadata?: Record<string, unknown> | null
-  app_metadata?: Record<string, unknown> | null
-}) {
-  const userRole = user.user_metadata?.role
-  if (typeof userRole === 'string') {
-    return userRole
-  }
-
-  const appRole = user.app_metadata?.role
-  if (typeof appRole === 'string') {
-    return appRole
-  }
-
-  return undefined
-}
+import { isAdminUser } from '@/lib/utils/admin'
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
+  const adminEmailsRaw = process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS
   let response = NextResponse.next({
     request,
   })
@@ -54,29 +37,34 @@ export async function proxy(request: NextRequest) {
   const {
     data: { session },
   } = await supabase.auth.getSession()
+  let resolvedUser = session?.user ?? null
 
-  const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route))
+  if (session) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (user) {
+      resolvedUser = user
+    }
+  }
+
   const isAuthRoute = pathname === '/login' || pathname === '/register'
 
-  if (isProtectedRoute && !session) {
-    return NextResponse.redirect(new URL('/login', request.url))
+  if (isAuthRoute && resolvedUser) {
+    const isAdmin = isAdminUser(resolvedUser, adminEmailsRaw)
+    return NextResponse.redirect(new URL(isAdmin ? '/admin' : '/', request.url))
   }
 
-  if (isAuthRoute && session) {
-    const role = getUserRole(session.user)
-    return NextResponse.redirect(new URL(role === 'admin' ? '/admin' : '/', request.url))
-  }
-
-  if (pathname === '/' && session) {
-    const role = getUserRole(session.user)
-    if (role === 'admin') {
+  if (pathname === '/' && resolvedUser) {
+    const isAdmin = isAdminUser(resolvedUser, adminEmailsRaw)
+    if (isAdmin) {
       return NextResponse.redirect(new URL('/admin', request.url))
     }
   }
 
-  if (pathname.startsWith('/admin') && session) {
-    const role = getUserRole(session.user)
-    if (role !== 'admin') {
+  if (pathname.startsWith('/admin')) {
+    if (resolvedUser && !isAdminUser(resolvedUser, adminEmailsRaw)) {
       return NextResponse.redirect(new URL('/', request.url))
     }
   }
